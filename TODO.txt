@@ -1,0 +1,10 @@
+Engine Work:
+	Entity
+		An entity has:
+		-size for hitbox
+		-position
+	Entity-Tilemap collisions
+	Entity-Entity collisions
+	Chunk system for levels
+		Split levels into a number of tilemaps/chunks
+		Entites only collide with entities in the same chunk or neighboring chunks
