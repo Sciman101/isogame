@@ -10,14 +10,17 @@ local VERTEX_FORMAT = {
 local Tiles = {
 	wall={
 		shape='block',
+		solid=true,
 		uv={0,0,0.5,0.5}
 	},
 	rgb={
 		shape='block',
+		solid=true,
 		uv={0,0.5,0.5,1}
 	},
 	floor={
 		shape='floor',
+		solid=false,
 		uv={0.5,0.5,1,0.75}
 	},
 	atlas=love.graphics.newImage('assets/DiagonalTile.png')
@@ -41,8 +44,9 @@ function isogrid.new(width,height,tilesize)
 
 	-- Set grid data
 	for i=1,grid.count do
-		grid[i] = love.math.random() < 0.1 and Tiles.rgb or Tiles.floor
+		grid[i] = love.math.random() > 0.0 and Tiles.floor or Tiles.rgb
 	end
+	grid[1] = Tiles.floor
 
 	return grid
 end
@@ -58,7 +62,7 @@ function isogrid:worldToTile(x,y)
 	y = y - self.y
 
 	local tx = x/(self.size*4) + y/(self.size*2) + 0.5
-    return math.floor(tx),math.floor(tx-x/self.size*2)
+    return math.floor(tx),math.floor(tx-(x/(self.size*2)))
 end
 
 function isogrid:pointInMapBounds(x,y)
@@ -67,7 +71,7 @@ end
 
 function isogrid:getTile(x,y)
 	if not self:pointInMapBounds(x,y) then return nil end
-	return self[x+y*self.width]
+	return self[x+y*self.width+1]
 end
 
 function isogrid:getBoundingSize()
@@ -92,8 +96,6 @@ end
 function isogrid:buildMesh()
 
 	local vertices = {}
-
-	local boundW, boundH = self:getBoundingSize()
 
 	local x,y = 0,0
 	for i=1,self.count do

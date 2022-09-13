@@ -1,10 +1,20 @@
 Engine Work:
-	Entity
-		An entity has:
-		-size for hitbox
-		-position
-	Entity-Tilemap collisions
-	Entity-Entity collisions
-	Chunk system for levels
-		Split levels into a number of tilemaps/chunks
-		Entites only collide with entities in the same chunk or neighboring chunks
+
+	DONE:
+		Entity
+			An entity has:
+			-size for hitbox
+			-position
+
+		Entity-Tilemap collisions
+			- Needs to slide on collision with wall
+
+		Entity-Entity collisions
+
+	WIP:
+		Level system
+			levels track:
+				entities
+				tilemap data
+				tilemap chunks
+					to optimize rendering, the tilemap is broken into individual meshes. The actual tilemap data is stored as a single giant array to make accessing easier
