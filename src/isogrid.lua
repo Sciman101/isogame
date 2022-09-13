@@ -107,7 +107,7 @@ function isogrid:buildMesh()
 			if tile.shape == 'block' then
 				addQuad(vertices,tile,wx-self.size*2,wy-self.size*3,self.size*4,self.size*4,wy*0.005)
 			elseif tile.shape == 'floor' then
-				addQuad(vertices,tile,wx-self.size*2,wy-self.size,self.size*4,self.size*2,-5)
+				addQuad(vertices,tile,wx-self.size*2,wy-self.size,self.size*4,self.size*2,wy*0.005-5)
 			end
 		end
 

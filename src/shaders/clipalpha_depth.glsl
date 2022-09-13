@@ -1,6 +1,5 @@
 uniform float z_offset;
 
-
 #ifdef VERTEX
 	vec4 position(mat4 transform_projection, vec4 vertex_position){
 		vertex_position.z += z_offset;

@@ -28,7 +28,7 @@ function love.load()
 	depthCanvas = love.graphics.newCanvas(640,360,{type = "2d", format = "depth32f", readable = true, mipmaps = "none"})
 	love.graphics.setDepthMode('lequal',true)
 
-	local SIZE = 500
+	local SIZE = 100
 	grid = Isogrid.new(SIZE,SIZE,8)
 
 	player = Entity(0,0,6)
@@ -177,18 +177,15 @@ function love.draw()
 	-- Do normal drawing here
 	love.graphics.push()
 	love.graphics.translate(math.floor(cx),math.floor(cy))
+	--love.graphics.scale(0.01,0.01)
 
 	-- Draw tilemap
-	discardAlphaDepthShader:send('z_offset',(grid.y-cy)*0.005)
+	discardAlphaDepthShader:send('z_offset',(grid.y+cy)*0.005)
 	grid:draw()
-
-	local mx, my = love.mouse.getPosition()
-	mx = mx/2-cx
-	my = my/2-cy
 
 	for i=1,#entities do
 		local entity = entities[i]
-		discardAlphaDepthShader:send('z_offset',(entity.y-cy)*0.005)
+		discardAlphaDepthShader:send('z_offset',(entity.y+cy)*0.005)
 		entity:draw()
 	end
 
