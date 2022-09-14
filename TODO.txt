@@ -1,20 +1,24 @@
 Engine Work:
 
-	DONE:
-		Entity
-			An entity has:
-			-size for hitbox
-			-position
+[x] Entity
+	An entity has:
+	-size for hitbox
+	-position
 
-		Entity-Tilemap collisions
-			- Needs to slide on collision with wall
+[x] Entity-Tilemap collisions
+	- Needs to slide on collision with wall
+	- TODO needs bugtesting
 
-		Entity-Entity collisions
+[x] Entity-Entity collision detection
 
-	WIP:
-		Level system
-			levels track:
-				entities
-				tilemap data
-				tilemap chunks
-					to optimize rendering, the tilemap is broken into individual meshes. The actual tilemap data is stored as a single giant array to make accessing easier
+[ ] Level system
+	levels track:
+		entities
+		tilemap data
+		tilemap chunks
+			to optimize rendering, the tilemap is broken into individual meshes. The actual tilemap data is stored as a single giant array to make accessing easier
+	
+[ ] Level quadtree for optimized entity collision
+
+[x] Tilemap system
+	Tilemaps track the size of their tiles, the atlas texture, their uv coords, etc

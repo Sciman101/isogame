@@ -7,14 +7,14 @@ Object = require 'lib/classic'
 
 local flux = require 'lib/flux'
 
-local Isogrid = require 'isogrid'
+local Level = require 'level/level'
 local Entity = require 'entity/entity'
 
 local mainCanvas, depthCanvas
 local discardAlphaDepthShader = love.graphics.newShader('src/shaders/clipalpha_depth.glsl')
 local rToRGB = love.graphics.newShader('src/shaders/r_to_rgb.glsl')
 
-local grid
+local level
 local player = nil
 local entity2 = nil
 local entities = {}
@@ -28,8 +28,8 @@ function love.load()
 	depthCanvas = love.graphics.newCanvas(640,360,{type = "2d", format = "depth32f", readable = true, mipmaps = "none"})
 	love.graphics.setDepthMode('lequal',true)
 
-	local SIZE = 100
-	grid = Isogrid.new(SIZE,SIZE,8)
+	local SIZE = 64
+	level = Level(SIZE,SIZE,8)
 
 	player = Entity(0,0,6)
 	entity2 = Entity(0,100,8)
@@ -37,7 +37,7 @@ function love.load()
 	entities[2] = entity2
 
 	-- Build da mesh
-	grid:buildMesh()
+	level:generateMeshes()
 end
 
 function getAxis(neg,pos)
@@ -75,11 +75,11 @@ function love.update(dt)
 
 	local slideX, slideY = 0
 
-	local collide,t,tx,ty = player:testMove(dx*dt,0,grid)
+	local collide,t,tx,ty = player:testMove(dx*dt,0,level)
 	if collide then
 		local xx = sign(dx)
 		slideX = dx
-		while not player:testMove(xx,0,grid) do
+		while not player:testMove(xx,0,level) do
 			player.x = player.x + xx
 		end
 		dx = 0
@@ -87,7 +87,7 @@ function love.update(dt)
 		player.collisions.left = xx < 0
 		player.collisions.right = xx > 0
 
-		local _, twy = grid:tileToWorld(tx,ty)
+		local _, twy = level:tileToWorld(tx,ty)
 		if twy > player.y then
 			player.collisions.br = xx > 0
 			player.collisions.bl = xx < 0
@@ -101,9 +101,9 @@ function love.update(dt)
 			slideY = math.abs(slideX * 0.5)
 			if player.collisions.br or player.collisions.bl then slideY = -slideY end
 			
-			if player:testMove(slideX*dt,slideY*dt,grid) then
+			if player:testMove(slideX*dt,slideY*dt,level) then
 				local yy = sign(slideY)
-				while not player:testMove(xx*2,yy,grid) do
+				while not player:testMove(xx*2,yy,level) do
 					player.x = player.x + xx*2
 					player.y = player.y + yy
 				end
@@ -114,11 +114,11 @@ function love.update(dt)
 		end
 	end
 
-	collide,t,tx,ty = player:testMove(0,dy*dt,grid)
+	collide,t,tx,ty = player:testMove(0,dy*dt,level)
 	if collide then
 		local yy = sign(dy)
 		slideY = dy
-		while not player:testMove(0,yy,grid) do
+		while not player:testMove(0,yy,level) do
 			player.y = player.y + yy
 		end
 		dy = 0
@@ -126,7 +126,7 @@ function love.update(dt)
 		player.collisions.top = yy < 0
 		player.collisions.bottom = yy > 0
 
-		local twx = grid:tileToWorld(tx,ty)
+		local twx = level:tileToWorld(tx,ty)
 		if twx > player.x then
 			player.collisions.tr = yy < 0
 			player.collisions.br = yy > 0
@@ -141,9 +141,9 @@ function love.update(dt)
 			slideY = 0.5 * slideY
 			if player.collisions.br or player.collisions.tr then slideX = -slideX end
 			
-			if player:testMove(slideX*dt,slideY*dt,grid) then
+			if player:testMove(slideX*dt,slideY*dt,level) then
 				local xx = sign(slideX)
-				while not player:testMove(xx*2,yy,grid) do
+				while not player:testMove(xx*2,yy,level) do
 					player.x = player.x + xx*2
 					player.y = player.y + yy
 				end
@@ -180,8 +180,8 @@ function love.draw()
 	--love.graphics.scale(0.01,0.01)
 
 	-- Draw tilemap
-	discardAlphaDepthShader:send('z_offset',(grid.y+cy)*0.005)
-	grid:draw()
+	discardAlphaDepthShader:send('z_offset',cy*0.005)
+	level:draw()
 
 	for i=1,#entities do
 		local entity = entities[i]
