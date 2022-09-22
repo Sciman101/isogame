@@ -51,7 +51,7 @@ function Level:new(width,height,tilesize)
 
 	-- Set grid data
 	for i=1,self.count do
-		self.tiles[i] = love.math.random() > 0.1 and Tiles.floor or Tiles.rgb
+		self.tiles[i] = love.math.random() > 0.01 and Tiles.floor or Tiles.rgb
 	end
 	self.tiles[1] = Tiles.floor
 
@@ -65,8 +65,8 @@ function Level:new(width,height,tilesize)
 				cx = cx,
 				cy = cy,
 				-- World coordinates, used for rendering. Unlike tiles, this is centered on the top left corner
-				x = self.chunkRenderWidth*0.5*(cx-cy)-self.chunkRenderHeight/2,
-				y = (cx+cy)*self.chunkRenderHeight*0.5-self.chunkRenderHeight,
+				x = self.chunkRenderWidth*0.5*(cx-cy),
+				y = (cx+cy)*self.chunkRenderHeight*0.5,
 				dirty = true
 			}
 		end
