@@ -142,15 +142,16 @@ function Level:buildMesh(chunk)
 
 			-- Coordinates of the tile in render space relative to the chunk
 			local cx,cy = self:tileToWorld(x,y)
+			local _, worldY = self:tileToWorld(absX,absY)
 
 			-- The tile we need to mesh
 			local tile = self.tiles[absX + absY * self.width + 1]
 
 			if tile then
 				if tile.shape == 'block' then
-					addQuad(vertices,tile,cx-self.size*2,cy-self.size*3,self.size*4,self.size*4,cy*0.005)
+					addQuad(vertices,tile,cx-self.size*2,cy-self.size*3,self.size*4,self.size*4,worldY*0.005)
 				elseif tile.shape == 'floor' then
-					addQuad(vertices,tile,cx-self.size*2,cy-self.size,self.size*4,self.size*2,cy*0.005-5)
+					addQuad(vertices,tile,cx-self.size*2,cy-self.size,self.size*4,self.size*2,worldY*0.005-5)
 				end
 			end
 
