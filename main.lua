@@ -10,8 +10,9 @@ local flux = require 'lib/flux'
 local Level = require 'level/level'
 local Entity = require 'entity/entity'
 
+local depthShader = require 'singleton/depthShader'
+
 local mainCanvas, depthCanvas
-local discardAlphaDepthShader = love.graphics.newShader('src/shaders/clipalpha_depth.glsl')
 local rToRGB = love.graphics.newShader('src/shaders/r_to_rgb.glsl')
 
 local level
@@ -171,8 +172,8 @@ function love.draw()
 	love.graphics.clear(0,0,0,1,0,10000)
 	love.graphics.setColor(1,1,1)
 
-	love.graphics.setShader(discardAlphaDepthShader)
-	discardAlphaDepthShader:send('z_offset',0)
+	love.graphics.setShader(depthShader)
+	depthShader:send('z_offset',0)
 
 	-- Do normal drawing here
 	love.graphics.push()
@@ -180,12 +181,12 @@ function love.draw()
 	--love.graphics.scale(0.01,0.01)
 
 	-- Draw tilemap
-	discardAlphaDepthShader:send('z_offset',cy*0.005)
+	depthShader:send('z_offset',cy*0.005)
 	level:draw()
 
 	for i=1,#entities do
 		local entity = entities[i]
-		discardAlphaDepthShader:send('z_offset',(entity.y+cy)*0.005)
+		depthShader:send('z_offset',(entity.y+cy)*0.005)
 		entity:draw()
 	end
 
