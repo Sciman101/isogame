@@ -1,8 +1,11 @@
 local CORNERS = {2,0, 0,1, -2,0, 0,-1}
 
 Entity = Object:extend()
+Entity._id = 0
 
 function Entity:new(x,y,s)
+	self.name = 'Entity ' .. Entity._id
+	Entity._id = Entity._id + 1
 	self.x = x or 0
 	self.y = y or 0
 	self.s = s or 8 -- Size of entity (half height of diamond hitbox)
@@ -20,6 +23,10 @@ function Entity:new(x,y,s)
 		bl=false,
 		br=false
 	}
+end
+
+function Entity:__tostring()
+	return self.name
 end
 
 -- Utilities --

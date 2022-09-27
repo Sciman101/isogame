@@ -1,4 +1,5 @@
 local helpers = require 'helpers'
+local depthShader = require 'singleton/depthShader'
 
 local Level = Object:extend()
 
@@ -48,6 +49,11 @@ function Level:new(width,height,tilesize)
 
 	self.chunkRenderWidth = (Level.CHUNK_SIZE*4)*self.size
 	self.chunkRenderHeight = (Level.CHUNK_SIZE*2)*self.size
+
+	-- Entities
+	self.entityCount = 0
+	self.entityChain = nil -- Linked list
+	self.entityLookup = {} -- Used for quickly removing entities
 
 	-- Set grid data
 	for i=1,self.count do
@@ -103,14 +109,87 @@ function Level:getBoundingSize()
 	return (self.width*2+self.height*2)*self.size,(self.width+self.height)*self.size
 end
 
+-- ENTITY HANDLING --
+
+function Level:addEntity(entity)
+	local node = {
+		entity=entity,
+		next=nil,
+		prev=nil
+	}
+	if not self.entityChain then
+		self.entityChain = node
+	else
+		node.next = self.entityChain
+		self.entityChain.prev = node
+		self.entityChain = node
+	end
+
+	self.entityCount = self.entityCount + 1
+	self.entityLookup[entity] = node
+end
+
+function Level:removeEntity(entity)
+	local node = self.entityLookup[entity]
+	if node then
+
+		local prevNode = node.prev
+		local nextNode = node.next
+
+		nextNode.prev = prevNode
+
+		if prevNode then
+			prevNode.next = nextNode
+		else
+			self.entityChain = nextNode
+		end
+		self.entityLookup[entity] = nil
+
+		return node.entity
+	end
+end
+
+function Level:findEntity(condition)
+	for node in self:entitiesIter() do
+		if condition(node.entity) then
+			return node.entity
+		end
+	end
+end
+
+local function linkedListIterator(head,node)
+	if node == nil then
+		node = head
+	else
+		node = node.next
+	end
+
+	if node then
+		return node
+	end
+end
+
+function Level:entitiesIter()
+	return linkedListIterator, self.entityChain, nil
+end
+
+-- BASIC FUNCTIONS --
+
 function Level:draw()
+	depthShader:send('z_offset_b',0)
 	for i=1,self.chunkCount do
 		local chunk = self.chunks[i]
 		if chunk.mesh then
 			love.graphics.draw(chunk.mesh,chunk.x,chunk.y)
 		end
 	end
+	for node in self:entitiesIter() do
+		depthShader:send('z_offset_b',node.entity.y * 0.005)
+		node.entity:draw()
+	end
 end
+
+-- CHUNK GENERATION --
 
 -- Generate EVERY mesh for the level
 function Level:generateMeshes()

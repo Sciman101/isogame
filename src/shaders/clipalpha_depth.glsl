@@ -1,8 +1,9 @@
-uniform float z_offset;
+uniform float z_offset_a;
+uniform float z_offset_b;
 
 #ifdef VERTEX
 	vec4 position(mat4 transform_projection, vec4 vertex_position){
-		vertex_position.z += z_offset;
+		vertex_position.z += z_offset_a + z_offset_b;
 		return transform_projection * vertex_position;
 	}
 #endif

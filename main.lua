@@ -18,7 +18,6 @@ local rToRGB = love.graphics.newShader('src/shaders/r_to_rgb.glsl')
 local level
 local player = nil
 local entity2 = nil
-local entities = {}
 
 local cx, cy = 320,180
 
@@ -34,8 +33,9 @@ function love.load()
 
 	player = Entity(0,0,6)
 	entity2 = Entity(0,100,8)
-	entities[1] = player
-	entities[2] = entity2
+
+	level:addEntity(player)
+	level:addEntity(entity2)
 
 	-- Build da mesh
 	level:generateMeshes()
@@ -173,7 +173,7 @@ function love.draw()
 	love.graphics.setColor(1,1,1)
 
 	love.graphics.setShader(depthShader)
-	depthShader:send('z_offset',0)
+	depthShader:send('z_offset_a',0)
 
 	-- Do normal drawing here
 	love.graphics.push()
@@ -181,14 +181,8 @@ function love.draw()
 	--love.graphics.scale(0.01,0.01)
 
 	-- Draw tilemap
-	depthShader:send('z_offset',cy*0.005)
+	depthShader:send('z_offset_a',cy*0.005)
 	level:draw()
-
-	for i=1,#entities do
-		local entity = entities[i]
-		depthShader:send('z_offset',(entity.y+cy)*0.005)
-		entity:draw()
-	end
 
 	love.graphics.setShader()
 	-- End normal drawing
